@@ -9,6 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -23,15 +27,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker Image
-        run: docker build -t ghcr.io/areeba-anjum98/lab12app:latest .
-
-      - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/areeba-anjum98/lab12app:latest
-
-      - name: Run Container Test
-        run: |
-          docker run -d -p 3000:3000 --name testapp ghcr.io/areeba-anjum98/lab12app:latest
-          sleep 5
-          docker ps
-          docker stop testapp
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/areeba-anjum98/lab12app:latest
