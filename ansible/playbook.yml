@@ -1,0 +1,44 @@
+---
+- name: Configure Web Server
+  hosts: webservers
+  become: true
+
+  vars:
+    app_name: lab12app
+    app_port: 3000
+    new_user: labuser
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Start Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: Create new user
+      user:
+        name: "{{ new_user }}"
+        state: present
+        shell: /bin/bash
+
+    - name: Deploy configuration file
+      copy:
+        dest: /etc/nginx/conf.d/{{ app_name }}.conf
+        content: |
+          server {
+              listen {{ app_port }};
+              server_name {{ app_name }};
+          }
+
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+      ignore_errors: yes

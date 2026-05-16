@@ -1,0 +1,6 @@
+Database Configuration
+======================
+DB Name: labdb
+DB User: labuser
+DB Port: 5432
+Environment: production
